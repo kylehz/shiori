@@ -413,7 +413,6 @@ func (h *handler) apiUpdateCache(w http.ResponseWriter, r *http.Request, ps http
 	// Decode request
 	request := struct {
 		IDs           []int `json:"ids"`
-		KeepMetadata  bool  `json:"keepMetadata"`
 		CreateArchive bool  `json:"createArchive"`
 	}{}
 
@@ -453,7 +452,7 @@ func (h *handler) apiUpdateCache(w http.ResponseWriter, r *http.Request, ps http
 		// Mark whether book will be archived
 		book.CreateArchive = request.CreateArchive
 
-		go func(i int, book model.Bookmark, keepMetadata bool) {
+		go func(i int, book model.Bookmark) {
 			// Make sure to finish the WG
 			defer wg.Done()
 
@@ -475,8 +474,6 @@ func (h *handler) apiUpdateCache(w http.ResponseWriter, r *http.Request, ps http
 				Bookmark:    book,
 				Content:     content,
 				ContentType: contentType,
-				KeepTitle:   keepMetadata,
-				KeepExcerpt: keepMetadata,
 			}
 
 			book, _, err = core.ProcessBookmark(request)
@@ -491,7 +488,7 @@ func (h *handler) apiUpdateCache(w http.ResponseWriter, r *http.Request, ps http
 			mx.Lock()
 			bookmarks[i] = book
 			mx.Unlock()
-		}(i, book, request.KeepMetadata)
+		}(i, book)
 	}
 
 	// Receive all problematic bookmarks

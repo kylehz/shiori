@@ -88,8 +88,6 @@ func addHandler(cmd *cobra.Command, args []string) {
 				Content:     content,
 				ContentType: contentType,
 				LogArchival: logArchival,
-				KeepTitle:   title != "",
-				KeepExcerpt: excerpt != "",
 			}
 
 			book, isFatalErr, err = core.ProcessBookmark(request)

@@ -30,8 +30,6 @@ type ProcessRequest struct {
 	Bookmark    model.Bookmark
 	Content     io.Reader
 	ContentType string
-	KeepTitle   bool
-	KeepExcerpt bool
 	LogArchival bool
 }
 
@@ -78,11 +76,11 @@ func ProcessBookmark(req ProcessRequest) (model.Bookmark, bool, error) {
 		book.HTML = article.Content
 
 		// If title and excerpt doesnt have submitted value, use from article
-		if !req.KeepTitle || book.Title == "" {
+		if book.Title == "" {
 			book.Title = article.Title
 		}
 
-		if !req.KeepExcerpt || book.Excerpt == "" {
+		if book.Excerpt == "" {
 			book.Excerpt = article.Excerpt
 		}
 

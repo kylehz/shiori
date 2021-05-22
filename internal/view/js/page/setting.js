@@ -28,10 +28,6 @@ var template = `
         <details v-if="activeAccount.owner" open class="setting-group" id="setting-bookmarks">
             <summary>Bookmarks</summary>
             <label>
-                <input type="checkbox" v-model="appOptions.keepMetadata" @change="saveSetting">
-                Keep bookmark's metadata when updating
-            </label>
-            <label>
                 <input type="checkbox" v-model="appOptions.useArchive" @change="saveSetting">
                 Create archive by default
             </label>
@@ -89,7 +85,6 @@ export default {
 				hideThumbnail: this.appOptions.hideThumbnail,
 				hideExcerpt: this.appOptions.hideExcerpt,
 				nightMode: this.appOptions.nightMode,
-				keepMetadata: this.appOptions.keepMetadata,
 				useArchive: this.appOptions.useArchive,
 				makePublic: this.appOptions.makePublic,
 			});

@@ -279,7 +279,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"ids\": [1, 2],\n\t\"keepMetadata\": false,\n\t\"createArchive\": false\n}"
+							"raw": "{\n\t\"ids\": [1, 2],\n\t\"createArchive\": false\n}"
 						},
 						"url": {
 							"raw": "{{host}}/api/cache",

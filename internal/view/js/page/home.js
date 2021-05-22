@@ -602,11 +602,6 @@ export default {
 				title: "Update Cache",
 				content: "Update cache for selected bookmarks ? This action is irreversible.",
 				fields: [{
-					name: "keepMetadata",
-					label: "Keep the old title and excerpt",
-					type: "check",
-					value: this.appOptions.keepMetadata,
-				}, {
 					name: "createArchive",
 					label: "Update archive as well",
 					type: "check",
@@ -618,7 +613,6 @@ export default {
 					var data = {
 						ids: ids,
 						createArchive: data.createArchive,
-						keepMetadata: data.keepMetadata,
 					};
 
 					this.dialog.loading = true;
