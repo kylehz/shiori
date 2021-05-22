@@ -20,7 +20,7 @@ var template = `
 	<div class="spacer"></div>
 	<div class="bookmark-menu">
 		<a class="url" :href="url" target="_blank" rel="noopener">
-			{{hostnameURL}}
+			{{url}}
 		</a>
 		<template v-if="!editMode && menuVisible">
 			<a title="Edit bookmark" @click="editBookmark">

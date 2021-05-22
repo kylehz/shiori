@@ -265,21 +265,24 @@ func (h *handler) apiInsertBookmark(w http.ResponseWriter, r *http.Request, ps h
 	}
 
 	// Fetch data from internet
-	var isFatalErr bool
-	content, contentType, err := core.DownloadBookmark(book.URL)
-	if err == nil && content != nil {
-		request := core.ProcessRequest{
-			DataDir:     h.DataDir,
-			Bookmark:    book,
-			Content:     content,
-			ContentType: contentType,
-		}
+	offline := true
+	if !offline {
+		var isFatalErr bool
+		content, contentType, err := core.DownloadBookmark(book.URL)
+		if err == nil && content != nil {
+			request := core.ProcessRequest{
+				DataDir:     h.DataDir,
+				Bookmark:    book,
+				Content:     content,
+				ContentType: contentType,
+			}
 
-		book, isFatalErr, err = core.ProcessBookmark(request)
-		content.Close()
+			book, isFatalErr, err = core.ProcessBookmark(request)
+			content.Close()
 
-		if err != nil && isFatalErr {
-			panic(fmt.Errorf("failed to process bookmark: %v", err))
+			if err != nil && isFatalErr {
+				panic(fmt.Errorf("failed to process bookmark: %v", err))
+			}
 		}
 	}
 
