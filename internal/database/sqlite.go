@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-shiori/shiori/internal/model"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -237,12 +238,13 @@ func (db *SQLiteDatabase) GetBookmarks(opts GetBookmarksOptions) ([]model.Bookma
 
 	// Add where clause for search keyword
 	if opts.Keyword != "" {
-		query += ` AND (b.url LIKE ? OR b.excerpt LIKE ? OR b.id IN (
+		query += ` AND (b.url LIKE ? OR b.excerpt LIKE ? OR b.title LIKE ? OR b.id IN (
 			SELECT docid id 
 			FROM bookmark_content 
 			WHERE title MATCH ? OR content MATCH ?))`
 
 		args = append(args,
+			"%"+opts.Keyword+"%",
 			"%"+opts.Keyword+"%",
 			"%"+opts.Keyword+"%",
 			opts.Keyword,
@@ -280,7 +282,12 @@ func (db *SQLiteDatabase) GetBookmarks(opts GetBookmarksOptions) ([]model.Bookma
 
 	// Now we only need to find the normal tags
 	if len(opts.Tags) > 0 {
-		query += ` AND b.id IN (
+		if opts.Keyword != "" {
+			query += ` OR`
+		} else {
+			query += ` AND`
+		}
+		query += ` b.id IN (
 			SELECT bt.bookmark_id
 			FROM bookmark_tag bt
 			LEFT JOIN tag t ON bt.tag_id = t.id
@@ -321,6 +328,8 @@ func (db *SQLiteDatabase) GetBookmarks(opts GetBookmarksOptions) ([]model.Bookma
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand query: %v", err)
 	}
+
+	logrus.Debugf("[SQL] %v - %v", query, args)
 
 	// Fetch bookmarks
 	bookmarks := []model.Bookmark{}
@@ -372,12 +381,13 @@ func (db *SQLiteDatabase) GetBookmarksCount(opts GetBookmarksOptions) (int, erro
 
 	// Add where clause for search keyword
 	if opts.Keyword != "" {
-		query += ` AND (b.url LIKE ? OR b.excerpt LIKE ? OR b.id IN (
+		query += ` AND (b.url LIKE ? OR b.excerpt LIKE ? OR b.title LIKE ? OR b.id IN (
 			SELECT docid id 
 			FROM bookmark_content 
 			WHERE title MATCH ? OR content MATCH ?))`
 
 		args = append(args,
+			"%"+opts.Keyword+"%",
 			"%"+opts.Keyword+"%",
 			"%"+opts.Keyword+"%",
 			opts.Keyword,
@@ -415,7 +425,12 @@ func (db *SQLiteDatabase) GetBookmarksCount(opts GetBookmarksOptions) (int, erro
 
 	// Now we only need to find the normal tags
 	if len(opts.Tags) > 0 {
-		query += ` AND b.id IN (
+		if opts.Keyword != "" {
+			query += ` OR`
+		} else {
+			query += ` AND`
+		}
+		query += ` b.id IN (
 			SELECT bt.bookmark_id
 			FROM bookmark_tag bt
 			LEFT JOIN tag t ON bt.tag_id = t.id
@@ -435,6 +450,8 @@ func (db *SQLiteDatabase) GetBookmarksCount(opts GetBookmarksOptions) (int, erro
 
 		args = append(args, opts.ExcludedTags)
 	}
+
+	logrus.Debugf("[SQL] %v - %v", query, args)
 
 	// Expand query, because some of the args might be an array
 	query, args, err := sqlx.In(query, args...)

@@ -122,6 +122,15 @@ func (h *handler) apiLogout(w http.ResponseWriter, r *http.Request, ps httproute
 	fmt.Fprint(w, 1)
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 // apiGetBookmarks is handler for GET /api/bookmarks
 func (h *handler) apiGetBookmarks(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Make sure session still valid
@@ -147,6 +156,10 @@ func (h *handler) apiGetBookmarks(w http.ResponseWriter, r *http.Request, ps htt
 	page, _ := strconv.Atoi(strPage)
 	if page < 1 {
 		page = 1
+	}
+
+	if keyword != "" && !contains(tags, keyword) {
+		tags = append(tags, keyword)
 	}
 
 	// Prepare filter for database
